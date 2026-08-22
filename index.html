@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Licencia Tipo A — DAVID ORTIZ MARTINEZ</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, Helvetica, sans-serif; }
+        body { background: #f0f0f0; display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 30px; }
+        h2 { font-size: 20px; color: #333; }
+        .cambio-vista { padding: 12px 30px; font-size: 18px; background: #8B4513; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
+        .oculto { display: none !important; }
+
+        .licencia {
+            width: 1400px; height: 900px; background: #fff;
+            border: 1px solid #ccc; position: relative;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15); overflow: hidden;
+        }
+
+        .fondo-seguridad {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('fondo.jpg') no-repeat center center;
+            background-size: cover;
+            opacity: 0.12;
+            pointer-events: none; z-index: 1;
+        }
+
+        .escudo-izq { position: absolute; top: 25px; left: 30px; width: 110px; height: 110px; z-index: 2; }
+        .tit-veracruz { position: absolute; top: 30px; left: 160px; font-size: 34px; font-weight: 900; color: #8B4513; z-index: 2; }
+        .tit-veracruz small { font-size: 18px; font-weight: normal; display: block; }
+        .escudo-ssp { position: absolute; top: 25px; left: 520px; width: 100px; height: 100px; z-index: 2; }
+        .tit-ssp { position: absolute; top: 35px; left: 640px; font-size: 30px; font-weight: 900; color: #c00; z-index: 2; }
+        .tit-ssp small { font-size: 16px; font-weight: normal; color: #333; display: block; }
+        .logo-veracruz { position: absolute; top: 30px; right: 240px; width: 140px; height: 90px; z-index: 2; }
+
+        .franja-der {
+            position: absolute; top: 0; right: 0; width: 240px; height: 100%;
+            background: linear-gradient(180deg, #ffd300 0%, #e6bc00 100%);
+            display: flex; flex-direction: column; align-items: center; padding-top: 50px; z-index: 2;
+        }
+        .franja-der .tipo-texto { font-size: 28px; font-weight: bold; color: #000; }
+        .franja-der .letra-a { font-size: 80px; font-weight: 900; color: #000; margin: 10px 0; }
+        .franja-der #qr-frente { width: 180px; height: 180px; background: #fff; padding: 8px; border-radius: 4px; margin-top: 10px; }
+        .franja-der .zona { font-size: 24px; font-weight: bold; margin-top: 20px; }
+
+        .foto-principal { position: absolute; top: 180px; left: 40px; width: 280px; height: 340px; border: 1px solid #999; background: #eee; z-index: 2; }
+        .foto-principal img { width: 100%; height: 100%; object-fit: cover; }
+        .datos { position: absolute; top: 160px; left: 360px; line-height: 50px; font-size: 28px; font-weight: 600; z-index: 2; }
+        .datos span { font-weight: normal; font-size: 22px; color: #333; display: inline-block; width: 280px; }
+        .foto-chica { position: absolute; top: 190px; right: 260px; width: 160px; height: 200px; border: 1px solid #ccc; z-index: 2; }
+        .foto-chica img { width: 100%; height: 100%; object-fit: cover; }
+        .firma-linea { position: absolute; top: 410px; right: 240px; width: 200px; text-align: center; border-bottom: 1px solid #000; padding-top: 5px; font-style: italic; font-size: 14px; z-index: 2; }
+        .banda-repetida {
+            position: absolute; bottom: 140px; left: 0; right: 240px; height: 28px; background: #ffd300;
+            display: flex; align-items: center; justify-content: center; font-size: 12px; color: #664400;
+            overflow: hidden; white-space: nowrap; z-index: 2;
+        }
+        .franja-baja {
+            position: absolute; bottom: 0; left: 0; right: 0; height: 140px;
+            background: linear-gradient(180deg, #ffd300 0%, #e6bc00 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border-top: 2px solid #b8860b; z-index: 2;
+        }
+        .franja-baja .texto1 { font-size: 52px; font-weight: 900; color: #8B0000; margin-bottom: 10px; }
+        .franja-baja .texto2 { font-size: 36px; font-weight: bold; color: #8B0000; }
+
+        .reverso .mapa { position: absolute; top: 40px; left: 40px; width: 220px; height: 280px; z-index: 2; }
+        .reverso .datos-rev { position: absolute; top: 40px; left: 350px; line-height: 52px; font-size: 28px; font-weight: 600; z-index: 2; }
+        .reverso .datos-rev span { font-weight: normal; font-size: 24px; display: inline-block; width: 220px; }
+        .reverso .leyenda-autoriza { position: absolute; top: 420px; left: 350px; font-size: 26px; line-height: 1.4; font-weight: 600; z-index: 2; }
+        .reverso .folio { position: absolute; top: 320px; right: 80px; font-size: 42px; font-weight: 900; z-index: 2; }
+        .reverso .qr-rev { position: absolute; top: 40px; right: 40px; z-index: 2; }
+        .reverso #qr-reverso { width: 180px; height: 180px; background: #fff; padding: 8px; border-radius: 4px; }
+        .reverso .firma { position: absolute; bottom: 200px; left: 60px; width: 180px; height: 80px; z-index: 2; }
+        .reverso .funcionario { position: absolute; bottom: 120px; left: 60px; font-size: 22px; line-height: 1.4; z-index: 2; }
+        .reverso .franja-inferior {
+            position: absolute; bottom: 0; left: 0; right: 0; height: 180px; background: #ffd300;
+            display: flex; flex-direction: column; justify-content: center; padding: 0 30px;
+            font-family: monospace; font-size: 40px; font-weight: 900; letter-spacing: 2px;
+            border-top: 2px solid #b8860b; z-index: 2;
+        }
+    </style>
+</head>
+<body>
+
+    <h2 id="titulo-vista">🔵 FRENTE — Licencia Tipo A Veracruz</h2>
+    <button class="cambio-vista" onclick="cambiarVista()">👉 TOCAR PARA VER EL REVERSO</button>
+    
+    <div class="licencia" id="frente">
+        <div class="fondo-seguridad"></div>
+        
+        <div class="escudo-izq">
+            <svg viewBox="0 0 110 110"><path d="M55 8L15 25v60l40 20 40-20V25L55 8z" fill="#8B4513"/><path d="M55 18L22 32v52l33 16 33-16V32L55 18z" fill="#ffd300"/><circle cx="55" cy="55" r="18" fill="#fff"/><text x="55" y="62" text-anchor="middle" font-size="14" font-weight="bold" fill="#000">VERACRUZ</text></svg>
+        </div>
+        <div class="tit-veracruz">VERACRUZ<br><small>GOBIERNO DEL ESTADO</small></div>
+        <div class="escudo-ssp">
+            <svg viewBox="0 0 100 100"><rect x="10" y="5" width="80" height="90" rx="6" fill="#e0e0e0" stroke="#333" stroke-width="2"/><rect x="20" y="15" width="60" height="60" fill="#fff"/><text x="50" y="55" text-anchor="middle" font-size="20" font-weight="bold" fill="#c00">SSP</text></svg>
+        </div>
+        <div class="tit-ssp">SSP<small>Secretaría de Seguridad Pública</small></div>
+        <div class="logo-veracruz">
+            <svg viewBox="0 0 140 90"><text x="70" y="55" text-anchor="middle" font-size="36" font-weight="900" fill="#8B4513">VERA CRUZ</text></svg>
+        </div>
+
+        <div class="franja-der">
+            <div class="tipo-texto">TIPO</div>
+            <div class="letra-a">A</div>
+            <canvas id="qr-frente"></canvas>
+            <div class="zona">30 - VERACRUZ</div>
+        </div>
+
+        <div class="foto-principal"><img src="https://i.imgur.com/6ZxQ7yY.jpg" alt="David Ortiz"></div>
+        <div class="datos">
+            <p>MARTINEZ ORTIZ DAVID</p>
+            <p><span>CURP</span> OMD760525HVZRRV15</p>
+            <p><span>NACIMIENTO</span> 25/05/1976</p>
+            <p><span>EMISIÓN</span> 28/11/2025</p>
+            <p><span>EXPEDICIÓN</span> 28/11/2028</p>
+            <p><span>IDENTIFICADOR</span> UA10838046</p>
+        </div>
+        <div class="foto-chica"><img src="https://i.imgur.com/6ZxQ7yY.jpg" alt="Foto pequeña"></div>
+        <div class="firma-linea">firma del titular del documento</div>
+        <div class="banda-repetida">GOBIERNO DEL ESTADO DE VERACRUZ — GOBIERNO DEL ESTADO DE VERACRUZ</div>
+        <div class="franja-baja">
+            <div class="texto1">LICENCIA PARA CONDUCIR</div>
+            <div class="texto2">ESTADO DE VERACRUZ</div>
+        </div>
+    </div>
+
+    <div class="licencia oculto reverso" id="reverso">
+        <div class="fondo-seguridad"></div>
+        
+        <div class="mapa">
+            <svg viewBox="0 0 220 280"><path d="M40,30 L60,20 L80,25 L95,15 L110,20 L125,35 L140,40 L150,55 L155,70 L160,90 L155,110 L160,130 L155,150 L145,170 L130,185 L115,200 L100,210 L85,220 L70,215 L55,200 L45,180 L40,160 L35,140 L30,120 L35,100 L30,80 L35,60 Z" fill="#000"/><rect x="10" y="40" width="25" height="25" fill="#ffd300" transform="rotate(45 22 52)"/><rect x="50" y="80" width="30" height="30" fill="#ffd300" transform="rotate(45 65 95)"/></svg>
+        </div>
+
+        <div class="datos-rev">
+            <p><span>SEXO</span> M</p>
+            <p><span>GRUPO SANGUÍNEO</span> O+</p>
+            <p><span>RESTRICCIONES</span> NINGUNA</p>
+            <p><span>DONADOR</span> NO</p>
+            <p><span>ANTIGÜEDAD</span> 28/11/2025</p>
+            <p><span>LUGAR</span> CÓRDOBA</p>
+        </div>
+
+        <div class="leyenda-autoriza">
+            AUTORIZA A SU TITULAR CONDUCIR<br>
+            VEHÍCULOS DE TRANSPORTE PÚBLICO<br>
+            DE PASAJEROS
+        </div>
+
+        <div class="folio">UA10838046</div>
+        <div class="qr-rev"><canvas id="qr-reverso"></canvas></div>
+        
+        <div class="firma">
+            <svg viewBox="0 0 180 80"><path d="M10,40 Q30,10 60,35 T100,25 T150,40" fill="none" stroke="#000" stroke-width="3"/></svg>
+        </div>
+        <div class="funcionario">
+            Cuauhtémoc Zuñiga Bonilla<br>Secretario de Seguridad Pública
+        </div>
+
+        <div class="franja-inferior">
+            L&lt;&lt;UA10838046&lt;&lt;OMD760525HVZRRV15&lt;&lt;&lt;&lt;<br>
+            &lt;&lt;MARTINEZ&lt;&lt;DAVID&lt;&lt;ORTIZ&lt;&lt;&lt;28/11/2028&lt;
+        </div>
+    </div>
+
+<script>
+const contenidoQR = `LICENCIA TIPO A - VERACRUZ
+NOMBRE: DAVID MARTINEZ ORTIZ
+CURP: OMD760525HVZRRV15
+FOLIO: UA10838046
+SEXO: M
+GRUPO: O+
+NAC: 25/05/1976
+EMISIÓN: 28/11/2025
+VIGENCIA: 28/11/2028
+LUGAR: CÓRDOBA, VERACRUZ
+AUTORIZACIÓN: TRANSPORTE PÚBLICO DE PASAJEROS`;
+
+QRCode.toCanvas(document.getElementById('qr-frente'), contenidoQR, { width: 170, margin: 3 }, e=>e&&console.error(e));
+QRCode.toCanvas(document.getElementById('qr-reverso'), contenidoQR, { width: 170, margin: 3 }, e=>e&&console.error(e));
+
+let esFrente = true;
+function cambiarVista() {
+    esFrente = !esFrente;
+    document.getElementById('frente').classList.toggle('oculto');
+    document.getElementById('reverso').classList.toggle('oculto');
+    document.getElementById('titulo-vista').textContent = esFrente ? '🔵 FRENTE' : '🔙 REVERSO';
+    document.querySelector('.cambio-vista').textContent = esFrente ? '👉 TOCAR PARA VER EL REVERSO' : '👈 TOCAR PARA VER EL FRENTE';
+}
+</script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Licencia Tipo A — DAVID ORTIZ MARTINEZ</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, Helvetica, sans-serif; }
+        body { background: #f0f0f0; display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 30px; }
+        h2 { font-size: 20px; color: #333; }
+        .cambio-vista { padding: 12px 30px; font-size: 18px; background: #8B4513; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
+        .oculto { display: none !important; }
+
+        .licencia {
+            width: 1400px; height: 900px; background: #fff;
+            border: 1px solid #ccc; position: relative;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15); overflow: hidden;
+        }
+
+        .fondo-seguridad {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('fondo.jpg') no-repeat center center;
+            background-size: cover;
+            opacity: 0.12;
+            pointer-events: none; z-index: 1;
+        }
+
+        .escudo-izq { position: absolute; top: 25px; left: 30px; width: 110px; height: 110px; z-index: 2; }
+        .tit-veracruz { position: absolute; top: 30px; left: 160px; font-size: 34px; font-weight: 900; color: #8B4513; z-index: 2; }
+        .tit-veracruz small { font-size: 18px; font-weight: normal; display: block; }
+        .escudo-ssp { position: absolute; top: 25px; left: 520px; width: 100px; height: 100px; z-index: 2; }
+        .tit-ssp { position: absolute; top: 35px; left: 640px; font-size: 30px; font-weight: 900; color: #c00; z-index: 2; }
+        .tit-ssp small { font-size: 16px; font-weight: normal; color: #333; display: block; }
+        .logo-veracruz { position: absolute; top: 30px; right: 240px; width: 140px; height: 90px; z-index: 2; }
+
+        .franja-der {
+            position: absolute; top: 0; right: 0; width: 240px; height: 100%;
+            background: linear-gradient(180deg, #ffd300 0%, #e6bc00 100%);
+            display: flex; flex-direction: column; align-items: center; padding-top: 50px; z-index: 2;
+        }
+        .franja-der .tipo-texto { font-size: 28px; font-weight: bold; color: #000; }
+        .franja-der .letra-a { font-size: 80px; font-weight: 900; color: #000; margin: 10px 0; }
+        .franja-der #qr-frente { width: 180px; height: 180px; background: #fff; padding: 8px; border-radius: 4px; margin-top: 10px; }
+        .franja-der .zona { font-size: 24px; font-weight: bold; margin-top: 20px; }
+
+        .foto-principal { position: absolute; top: 180px; left: 40px; width: 280px; height: 340px; border: 1px solid #999; background: #eee; z-index: 2; }
+        .foto-principal img { width: 100%; height: 100%; object-fit: cover; }
+        .datos { position: absolute; top: 160px; left: 360px; line-height: 50px; font-size: 28px; font-weight: 600; z-index: 2; }
+        .datos span { font-weight: normal; font-size: 22px; color: #333; display: inline-block; width: 280px; }
+        .foto-chica { position: absolute; top: 190px; right: 260px; width: 160px; height: 200px; border: 1px solid #ccc; z-index: 2; }
+        .foto-chica img { width: 100%; height: 100%; object-fit: cover; }
+        .firma-linea { position: absolute; top: 410px; right: 240px; width: 200px; text-align: center; border-bottom: 1px solid #000; padding-top: 5px; font-style: italic; font-size: 14px; z-index: 2; }
+        .banda-repetida {
+            position: absolute; bottom: 140px; left: 0; right: 240px; height: 28px; background: #ffd300;
+            display: flex; align-items: center; justify-content: center; font-size: 12px; color: #664400;
+            overflow: hidden; white-space: nowrap; z-index: 2;
+        }
+        .franja-baja {
+            position: absolute; bottom: 0; left: 0; right: 0; height: 140px;
+            background: linear-gradient(180deg, #ffd300 0%, #e6bc00 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border-top: 2px solid #b8860b; z-index: 2;
+        }
+        .franja-baja .texto1 { font-size: 52px; font-weight: 900; color: #8B0000; margin-bottom: 10px; }
+        .franja-baja .texto2 { font-size: 36px; font-weight: bold; color: #8B0000; }
+
+        .reverso .mapa { position: absolute; top: 40px; left: 40px; width: 220px; height: 280px; z-index: 2; }
+        .reverso .datos-rev { position: absolute; top: 40px; left: 350px; line-height: 52px; font-size: 28px; font-weight: 600; z-index: 2; }
+        .reverso .datos-rev span { font-weight: normal; font-size: 24px; display: inline-block; width: 220px; }
+        .reverso .leyenda-autoriza { position: absolute; top: 420px; left: 350px; font-size: 26px; line-height: 1.4; font-weight: 600; z-index: 2; }
+        .reverso .folio { position: absolute; top: 320px; right: 80px; font-size: 42px; font-weight: 900; z-index: 2; }
+        .reverso .qr-rev { position: absolute; top: 40px; right: 40px; z-index: 2; }
+        .reverso #qr-reverso { width: 180px; height: 180px; background: #fff; padding: 8px; border-radius: 4px; }
+        .reverso .firma { position: absolute; bottom: 200px; left: 60px; width: 180px; height: 80px; z-index: 2; }
+        .reverso .funcionario { position: absolute; bottom: 120px; left: 60px; font-size: 22px; line-height: 1.4; z-index: 2; }
+        .reverso .franja-inferior {
+            position: absolute; bottom: 0; left: 0; right: 0; height: 180px; background: #ffd300;
+            display: flex; flex-direction: column; justify-content: center; padding: 0 30px;
+            font-family: monospace; font-size: 40px; font-weight: 900; letter-spacing: 2px;
+            border-top: 2px solid #b8860b; z-index: 2;
+        }
+    </style>
+</head>
+<body>
+
+    <h2 id="titulo-vista">🔵 FRENTE — Licencia Tipo A Veracruz</h2>
+    <button class="cambio-vista" onclick="cambiarVista()">👉 TOCAR PARA VER EL REVERSO</button>
+    
+    <div class="licencia" id="frente">
+        <div class="fondo-seguridad"></div>
+        
+        <div class="escudo-izq">
+            <svg viewBox="0 0 110 110"><path d="M55 8L15 25v60l40 20 40-20V25L55 8z" fill="#8B4513"/><path d="M55 18L22 32v52l33 16 33-16V32L55 18z" fill="#ffd300"/><circle cx="55" cy="55" r="18" fill="#fff"/><text x="55" y="62" text-anchor="middle" font-size="14" font-weight="bold" fill="#000">VERACRUZ</text></svg>
+        </div>
+        <div class="tit-veracruz">VERACRUZ<br><small>GOBIERNO DEL ESTADO</small></div>
+        <div class="escudo-ssp">
+            <svg viewBox="0 0 100 100"><rect x="10" y="5" width="80" height="90" rx="6" fill="#e0e0e0" stroke="#333" stroke-width="2"/><rect x="20" y="15" width="60" height="60" fill="#fff"/><text x="50" y="55" text-anchor="middle" font-size="20" font-weight="bold" fill="#c00">SSP</text></svg>
+        </div>
+        <div class="tit-ssp">SSP<small>Secretaría de Seguridad Pública</small></div>
+        <div class="logo-veracruz">
+            <svg viewBox="0 0 140 90"><text x="70" y="55" text-anchor="middle" font-size="36" font-weight="900" fill="#8B4513">VERA CRUZ</text></svg>
+        </div>
+
+        <div class="franja-der">
+            <div class="tipo-texto">TIPO</div>
+            <div class="letra-a">A</div>
+            <canvas id="qr-frente"></canvas>
+            <div class="zona">30 - VERACRUZ</div>
+        </div>
+
+        <div class="foto-principal"><img src="https://i.imgur.com/6ZxQ7yY.jpg" alt="David Ortiz"></div>
+        <div class="datos">
+            <p>MARTINEZ ORTIZ DAVID</p>
+            <p><span>CURP</span> OMD760525HVZRRV15</p>
+            <p><span>NACIMIENTO</span> 25/05/1976</p>
+            <p><span>EMISIÓN</span> 28/11/2025</p>
+            <p><span>EXPEDICIÓN</span> 28/11/2028</p>
+            <p><span>IDENTIFICADOR</span> UA10838046</p>
+        </div>
+        <div class="foto-chica"><img src="https://i.imgur.com/6ZxQ7yY.jpg" alt="Foto pequeña"></div>
+        <div class="firma-linea">firma del titular del documento</div>
+        <div class="banda-repetida">GOBIERNO DEL ESTADO DE VERACRUZ — GOBIERNO DEL ESTADO DE VERACRUZ</div>
+        <div class="franja-baja">
+            <div class="texto1">LICENCIA PARA CONDUCIR</div>
+            <div class="texto2">ESTADO DE VERACRUZ</div>
+        </div>
+    </div>
+
+    <div class="licencia oculto reverso" id="reverso">
+        <div class="fondo-seguridad"></div>
+        
+        <div class="mapa">
+            <svg viewBox="0 0 220 280"><path d="M40,30 L60,20 L80,25 L95,15 L110,20 L125,35 L140,40 L150,55 L155,70 L160,90 L155,110 L160,130 L155,150 L145,170 L130,185 L115,200 L100,210 L85,220 L70,215 L55,200 L45,180 L40,160 L35,140 L30,120 L35,100 L30,80 L35,60 Z" fill="#000"/><rect x="10" y="40" width="25" height="25" fill="#ffd300" transform="rotate(45 22 52)"/><rect x="50" y="80" width="30" height="30" fill="#ffd300" transform="rotate(45 65 95)"/></svg>
+        </div>
+
+        <div class="datos-rev">
+            <p><span>SEXO</span> M</p>
+            <p><span>GRUPO SANGUÍNEO</span> O+</p>
+            <p><span>RESTRICCIONES</span> NINGUNA</p>
+            <p><span>DONADOR</span> NO</p>
+            <p><span>ANTIGÜEDAD</span> 28/11/2025</p>
+            <p><span>LUGAR</span> CÓRDOBA</p>
+        </div>
+
+        <div class="leyenda-autoriza">
+            AUTORIZA A SU TITULAR CONDUCIR<br>
+            VEHÍCULOS DE TRANSPORTE PÚBLICO<br>
+            DE PASAJEROS
+        </div>
+
+        <div class="folio">UA10838046</div>
+        <div class="qr-rev"><canvas id="qr-reverso"></canvas></div>
+        
+        <div class="firma">
+            <svg viewBox="0 0 180 80"><path d="M10,40 Q30,10 60,35 T100,25 T150,40" fill="none" stroke="#000" stroke-width="3"/></svg>
+        </div>
+        <div class="funcionario">
+            Cuauhtémoc Zuñiga Bonilla<br>Secretario de Seguridad Pública
+        </div>
+
+        <div class="franja-inferior">
+            L&lt;&lt;UA10838046&lt;&lt;OMD760525HVZRRV15&lt;&lt;&lt;&lt;<br>
+            &lt;&lt;MARTINEZ&lt;&lt;DAVID&lt;&lt;ORTIZ&lt;&lt;&lt;28/11/2028&lt;
+        </div>
+    </div>
+
+<script>
+const contenidoQR = `LICENCIA TIPO A - VERACRUZ
+NOMBRE: DAVID MARTINEZ ORTIZ
+CURP: OMD760525HVZRRV15
+FOLIO: UA10838046
+SEXO: M
+GRUPO: O+
+NAC: 25/05/1976
+EMISIÓN: 28/11/2025
+VIGENCIA: 28/11/2028
+LUGAR: CÓRDOBA, VERACRUZ
+AUTORIZACIÓN: TRANSPORTE PÚBLICO DE PASAJEROS`;
+
+QRCode.toCanvas(document.getElementById('qr-frente'), contenidoQR, { width: 170, margin: 3 }, e=>e&&console.error(e));
+QRCode.toCanvas(document.getElementById('qr-reverso'), contenidoQR, { width: 170, margin: 3 }, e=>e&&console.error(e));
+
+let esFrente = true;
+function cambiarVista() {
+    esFrente = !esFrente;
+    document.getElementById('frente').classList.toggle('oculto');
+    document.getElementById('reverso').classList.toggle('oculto');
+    document.getElementById('titulo-vista').textContent = esFrente ? '🔵 FRENTE' : '🔙 REVERSO';
+    document.querySelector('.cambio-vista').textContent = esFrente ? '👉 TOCAR PARA VER EL REVERSO' : '👈 TOCAR PARA VER EL FRENTE';
+}
+</script>
+
+</body>
+</html>
